@@ -72,8 +72,8 @@ const CalendarWidget = () => {
           
           <div className="grid grid-cols-7 gap-0 text-center">
             {/* Days of week */}
-            {daysOfWeekShort.map(day => (
-              <div key={day} className="text-xs font-bold text-dark-gray font-pixel">
+            {daysOfWeekShort.map((day, idx) => (
+              <div key={`weekday-${idx}`} className="text-xs font-bold text-dark-gray font-pixel">
                 {day}
               </div>
             ))}
@@ -85,10 +85,11 @@ const CalendarWidget = () => {
               const hasDiaryEntry = diaryEntries.some(entry => isSameDay(new Date(entry.date), day));
               const hasTask = tasks.some(task => isSameDay(new Date(task.dueDate), day));
               const dailyTotal = getDailyTotal(day);
+              const dayKey = `day-${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`;
               
               return (
                 <div 
-                  key={index}
+                  key={dayKey}
                   className={`calendar-day ${isCurrentMonth ? 'bg-white' : 'bg-gray-100 text-gray-400'} 
                     hover:bg-soft-lavender/20 cursor-pointer
                     ${hasDiaryEntry ? 'has-entry' : ''} 
