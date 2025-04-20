@@ -1,0 +1,12 @@
+/* Custom cursor styles */
+.custom-cursor {
+  cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAABO0lEQVR4nO2XQUoDQRBFfzRCXCm4ySLqJUQkJ3DjMhC9gEtdomdwLbiL4ClcuBJ3CmYnJqmhG2cS05Punh4Q8qEgU9XD/6+qaboRKXAGPAEToA8cUC+2gVvgG1CMjXfgsrYgwAXwVWL45xgDR5UHAPrAW4Xpf+MB2K80AHBWI7w/7rhwEtECHiMD/nRhLaKfIPyvC12gk8r8KZOQ8cLLxI1n3ktlvgRi5X2EzFsreS/V+SkQ7yHzdsv8W6rzSyDGIfMOSvxbqfMPwMZ6IVqgxPyE+F2DOfCVY74JjNYEuI8xXwIXuXvimHgFjnPMl6ADPIYNV1e+M1/9Nwi/X8/z6ubFEhEZisiViDypyu8mVJVXEXkUkWsR2a3MfC0UqwTYA26A58BH6QS4zpk2S5HK/AdTPZn7+BHkEAAAAABJRU5ErkJggg=='), auto;
+}
+
+/* Pixel border effect */
+.pixel-border {
+  image-rendering: pixelated;
+  border-style: solid;
+  border-width: 2px;
+  border-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIklEQVQImWNgYGD4z8DAwMCACBgZGRkYkAEDTAxIgEUCAPnCBKe/HzPcAAAAAElFTkSuQmCC') 2 stretch;
+}

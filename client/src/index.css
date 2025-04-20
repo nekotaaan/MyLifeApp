@@ -1,0 +1,183 @@
+@import url('./components/ui/cursor.css');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    background-image: url('https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+    background-size: cover;
+    background-attachment: fixed;
+    cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAABO0lEQVR4nO2XQUoDQRBFfzRCXCm4ySLqJUQkJ3DjMhC9gEtdomdwLbiL4ClcuBJ3CmYnJqmhG2cS05Punh4Q8qEgU9XD/6+qaboRKXAGPAEToA8cUC+2gVvgG1CMjXfgsrYgwAXwVWL45xgDR5UHAPrAW4Xpf+MB2K80AHBWI7w/7rhwEtECHiMD/nRhLaKfIPyvC12gk8r8KZOQ8cLLxI1n3ktlvgRi5X2EzFsreS/V+SkQ7yHzdsv8W6rzSyDGIfMOSvxbqfMPwMZ6IVqgxPyE+F2DOfCVY74JjNYEuI8xXwIXuXvimHgFjnPMl6ADPIYNV1e+M1/9Nwi/X8/z6ubFEhEZisiViDypyu8mVJVXEXkUkWsR2a3MfC0UqwTYA26A58BH6QS4zpk2S5HK/AdTPZn7+BHkEAAAAABJRU5ErkJggg=='), auto;
+  }
+
+  :root {
+    --background: 0 0% 91%;
+    --foreground: 0 0% 27%;
+    
+    --card: 0 0% 91%;
+    --card-foreground: 0 0% 27%;
+    
+    --popover: 0 0% 91%;
+    --popover-foreground: 0 0% 27%;
+    
+    --primary: 210 30% 70%;
+    --primary-foreground: 0 0% 27%;
+    
+    --secondary: 270 30% 80%;
+    --secondary-foreground: 0 0% 27%;
+    
+    --muted: 0 0% 85%;
+    --muted-foreground: 0 0% 40%;
+    
+    --accent: 350 30% 90%;
+    --accent-foreground: 0 0% 27%;
+    
+    --destructive: 0 70% 70%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 0 0% 75%;
+    --input: 0 0% 85%;
+    --ring: 210 30% 70%;
+    
+    --chart-1: 210 30% 70%;
+    --chart-2: 270 30% 80%;
+    --chart-3: 350 30% 90%;
+    --chart-4: 150 30% 75%;
+    --chart-5: 40 60% 80%;
+
+    --sidebar-background: 0 0% 91%;
+    --sidebar-foreground: 0 0% 27%;
+    --sidebar-primary: 210 30% 70%;
+    --sidebar-primary-foreground: 0 0% 27%;
+    --sidebar-accent: 270 30% 80%;
+    --sidebar-accent-foreground: 0 0% 27%;
+    --sidebar-border: 0 0% 75%;
+    --sidebar-ring: 210 30% 70%;
+    
+    --radius: 0.5rem;
+  }
+
+  .font-pixel {
+    font-family: 'VT323', monospace;
+  }
+
+  .font-nunito {
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .window {
+    @apply border-2 border-dark-gray relative bg-light-gray shadow-retro;
+  }
+
+  .title-bar {
+    @apply p-1 border-b-2 border-dark-gray flex justify-between items-center;
+    background: linear-gradient(to right, #A0B4C8, #C9B6E4);
+  }
+
+  .title-text {
+    @apply font-pixel text-dark-gray font-bold;
+  }
+
+  .retro-button {
+    @apply bg-light-gray border-t-2 border-l-2 border-white border-r-2 border-b-2 border-r-gray-600 border-b-gray-600 font-pixel;
+  }
+
+  .retro-button:active {
+    @apply border-t-2 border-l-2 border-gray-600 border-r-2 border-b-2 border-r-white border-b-white;
+  }
+
+  .retro-input {
+    @apply border-2 border-gray-400 bg-white inset-1;
+  }
+
+  .calendar-day {
+    @apply w-10 h-10 border border-gray-300 flex flex-col justify-center items-center relative;
+  }
+
+  .calendar-day.has-entry::after {
+    content: '';
+    @apply absolute bottom-0.5 right-0.5 w-1.5 h-1.5 bg-soft-lavender rounded-full;
+  }
+
+  .calendar-day.has-task::before {
+    content: '';
+    @apply absolute bottom-0.5 left-0.5 w-1.5 h-1.5 bg-pale-yellow rounded-full;
+  }
+
+  ::-webkit-scrollbar {
+    width: 16px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-light-gray border-l border-gray-400;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-400 border border-white;
+  }
+  
+  ::-webkit-scrollbar-button {
+    @apply block h-4 bg-light-gray border border-white;
+  }
+}
+
+@layer components {
+  .bg-light-gray {
+    @apply bg-[#E8E8E8];
+  }
+  
+  .bg-dark-gray {
+    @apply bg-[#444444];
+  }
+  
+  .text-dark-gray {
+    @apply text-[#444444];
+  }
+  
+  .border-dark-gray {
+    @apply border-[#444444];
+  }
+  
+  .bg-dusty-blue {
+    @apply bg-[#A0B4C8];
+  }
+  
+  .bg-pale-pink {
+    @apply bg-[#F7D6D6];
+  }
+  
+  .bg-soft-lavender {
+    @apply bg-[#C9B6E4];
+  }
+  
+  .bg-mint-green {
+    @apply bg-[#A8D5BA];
+  }
+  
+  .bg-soft-red {
+    @apply bg-[#E8A0A0];
+  }
+  
+  .text-soft-red {
+    @apply text-[#E8A0A0];
+  }
+  
+  .bg-pale-yellow {
+    @apply bg-[#F3E5AB];
+  }
+
+  .shadow-retro {
+    @apply shadow-[2px_2px_0_rgba(0,0,0,0.3)];
+  }
+
+  .shadow-retro-inset {
+    @apply shadow-[inset_1px_1px_0_#FFFFFF,_inset_-1px_-1px_0_#606060];
+  }
+}
