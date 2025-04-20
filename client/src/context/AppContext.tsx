@@ -82,13 +82,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Change assistant message periodically
   useEffect(() => {
-    const messageInterval = setInterval(() => {
-      if (Math.random() > 0.7) { // 30% chance to change message
-        generateNewAssistantMessage();
-      }
-    }, 60000); // Check every minute
+    let messageInterval: NodeJS.Timeout;
+    
+    try {
+      messageInterval = setInterval(() => {
+        if (Math.random() > 0.7) { // 30% chance to change message
+          generateNewAssistantMessage();
+        }
+      }, 300000); // Check every 5 minutes instead of every minute to reduce overhead
+    } catch (error) {
+      console.error('Error setting up message interval:', error);
+    }
 
-    return () => clearInterval(messageInterval);
+    return () => {
+      if (messageInterval) {
+        clearInterval(messageInterval);
+      }
+    };
   }, []);
 
   // Refresh all data
