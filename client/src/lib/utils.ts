@@ -15,8 +15,14 @@ export function formatDateFull(date: Date | string): string {
   return format(new Date(date), "MMMM d, yyyy");
 }
 
-export function formatDateTime(date: Date | string): string {
-  return format(new Date(date), "MMM d, yyyy - h:mm a");
+export function formatDateTime(date: Date | string | null): string {
+  if (!date) return "Unknown date";
+  try {
+    return format(new Date(date), "MMM d, yyyy - h:mm a");
+  } catch (error) {
+    console.error("Invalid date format:", date);
+    return "Invalid date";
+  }
 }
 
 export function formatMonthYear(date: Date): string {
