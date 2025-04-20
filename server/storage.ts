@@ -4,6 +4,8 @@ import {
   expenses, type Expense, type InsertExpense,
   tasks, type Task, type InsertTask
 } from "@shared/schema";
+import { db } from './db';
+import { eq, desc, and, asc } from 'drizzle-orm';
 
 // Storage interface with all the necessary CRUD operations
 export interface IStorage {
@@ -35,185 +37,160 @@ export interface IStorage {
   deleteTask(id: number): Promise<boolean>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private diaryEntriesMap: Map<number, DiaryEntry>;
-  private expensesMap: Map<number, Expense>;
-  private tasksMap: Map<number, Task>;
-  
-  private userId: number;
-  private diaryEntryId: number;
-  private expenseId: number;
-  private taskId: number;
-
-  constructor() {
-    this.users = new Map();
-    this.diaryEntriesMap = new Map();
-    this.expensesMap = new Map();
-    this.tasksMap = new Map();
-    
-    this.userId = 1;
-    this.diaryEntryId = 1;
-    this.expenseId = 1;
-    this.taskId = 1;
-  }
-
+// Database storage implementation
+export class DatabaseStorage implements IStorage {
   // User methods
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const results = await db.select().from(users).where(eq(users.id, id));
+    return results[0];
   }
-
+  
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username
-    );
+    const results = await db.select().from(users).where(eq(users.username, username));
+    return results[0];
   }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  
+  async createUser(user: InsertUser): Promise<User> {
+    const results = await db.insert(users).values(user).returning();
+    return results[0];
   }
-
+  
   // Diary entry methods
   async createDiaryEntry(entry: InsertDiaryEntry): Promise<DiaryEntry> {
-    const id = this.diaryEntryId++;
-    const diaryEntry: DiaryEntry = { 
-      ...entry, 
-      id, 
-      createdAt: new Date() 
-    };
-    this.diaryEntriesMap.set(id, diaryEntry);
-    return diaryEntry;
+    const results = await db.insert(diaryEntries).values(entry).returning();
+    return results[0];
   }
-
+  
   async getDiaryEntryByDate(date: Date): Promise<DiaryEntry | undefined> {
     const dateStr = date.toISOString().split('T')[0];
-    return Array.from(this.diaryEntriesMap.values()).find(
-      (entry) => entry.date.toISOString().split('T')[0] === dateStr
-    );
+    const results = await db.select().from(diaryEntries).where(eq(diaryEntries.date, dateStr));
+    return results[0];
   }
-
+  
   async getDiaryEntries(): Promise<DiaryEntry[]> {
-    return Array.from(this.diaryEntriesMap.values()).sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
+    return await db.select().from(diaryEntries).orderBy(desc(diaryEntries.date));
   }
-
+  
   async updateDiaryEntry(id: number, entry: Partial<InsertDiaryEntry>): Promise<DiaryEntry | undefined> {
-    const existingEntry = this.diaryEntriesMap.get(id);
-    if (!existingEntry) return undefined;
-    
-    const updatedEntry: DiaryEntry = {
-      ...existingEntry,
-      ...entry,
-    };
-    
-    this.diaryEntriesMap.set(id, updatedEntry);
-    return updatedEntry;
+    const results = await db
+      .update(diaryEntries)
+      .set(entry)
+      .where(eq(diaryEntries.id, id))
+      .returning();
+    return results[0];
   }
-
+  
   async deleteDiaryEntry(id: number): Promise<boolean> {
-    return this.diaryEntriesMap.delete(id);
+    const results = await db
+      .delete(diaryEntries)
+      .where(eq(diaryEntries.id, id))
+      .returning();
+    return results.length > 0;
   }
-
+  
   // Expense methods
   async createExpense(expense: InsertExpense): Promise<Expense> {
-    const id = this.expenseId++;
-    const newExpense: Expense = {
-      ...expense,
-      id,
-      createdAt: new Date()
-    };
-    this.expensesMap.set(id, newExpense);
-    return newExpense;
+    const results = await db.insert(expenses).values(expense).returning();
+    return results[0];
   }
-
+  
   async getExpensesByDate(date: Date): Promise<Expense[]> {
     const dateStr = date.toISOString().split('T')[0];
-    return Array.from(this.expensesMap.values()).filter(
-      (expense) => expense.date.toISOString().split('T')[0] === dateStr
-    );
+    return await db
+      .select()
+      .from(expenses)
+      .where(eq(expenses.date, dateStr))
+      .orderBy(desc(expenses.createdAt));
   }
-
+  
   async getExpenses(): Promise<Expense[]> {
-    return Array.from(this.expensesMap.values()).sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
+    return await db
+      .select()
+      .from(expenses)
+      .orderBy(desc(expenses.date));
   }
-
+  
   async updateExpense(id: number, expense: Partial<InsertExpense>): Promise<Expense | undefined> {
-    const existingExpense = this.expensesMap.get(id);
-    if (!existingExpense) return undefined;
-    
-    const updatedExpense: Expense = {
-      ...existingExpense,
-      ...expense,
-    };
-    
-    this.expensesMap.set(id, updatedExpense);
-    return updatedExpense;
+    const results = await db
+      .update(expenses)
+      .set(expense)
+      .where(eq(expenses.id, id))
+      .returning();
+    return results[0];
   }
-
+  
   async deleteExpense(id: number): Promise<boolean> {
-    return this.expensesMap.delete(id);
+    const results = await db
+      .delete(expenses)
+      .where(eq(expenses.id, id))
+      .returning();
+    return results.length > 0;
   }
-
+  
   // Task methods
   async createTask(task: InsertTask): Promise<Task> {
-    const id = this.taskId++;
-    const newTask: Task = {
-      ...task,
-      id,
-      createdAt: new Date()
-    };
-    this.tasksMap.set(id, newTask);
-    return newTask;
+    const results = await db.insert(tasks).values(task).returning();
+    return results[0];
   }
-
+  
   async getTasks(): Promise<Task[]> {
-    return Array.from(this.tasksMap.values()).sort(
-      (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
-    );
+    // First get incomplete tasks sorted by due date, then completed tasks
+    const incompleteTasks = await db
+      .select()
+      .from(tasks)
+      .where(eq(tasks.completed, false))
+      .orderBy(asc(tasks.dueDate));
+      
+    const completedTasks = await db
+      .select()
+      .from(tasks)
+      .where(eq(tasks.completed, true))
+      .orderBy(desc(tasks.dueDate));
+      
+    return [...incompleteTasks, ...completedTasks];
   }
-
+  
   async getTasksByDate(date: Date): Promise<Task[]> {
     const dateStr = date.toISOString().split('T')[0];
-    return Array.from(this.tasksMap.values()).filter(
-      (task) => task.dueDate.toISOString().split('T')[0] === dateStr
-    );
+    return await db
+      .select()
+      .from(tasks)
+      .where(eq(tasks.dueDate, dateStr))
+      .orderBy(asc(tasks.completed), desc(tasks.createdAt));
   }
-
+  
   async updateTask(id: number, task: Partial<InsertTask>): Promise<Task | undefined> {
-    const existingTask = this.tasksMap.get(id);
-    if (!existingTask) return undefined;
-    
-    const updatedTask: Task = {
-      ...existingTask,
-      ...task,
-    };
-    
-    this.tasksMap.set(id, updatedTask);
-    return updatedTask;
+    const results = await db
+      .update(tasks)
+      .set(task)
+      .where(eq(tasks.id, id))
+      .returning();
+    return results[0];
   }
-
+  
   async toggleTaskCompletion(id: number): Promise<Task | undefined> {
-    const existingTask = this.tasksMap.get(id);
-    if (!existingTask) return undefined;
+    // First get the current task to check its completion status
+    const currentTasks = await db.select().from(tasks).where(eq(tasks.id, id));
+    if (!currentTasks.length) return undefined;
     
-    const updatedTask: Task = {
-      ...existingTask,
-      completed: !existingTask.completed
-    };
+    const currentTask = currentTasks[0];
     
-    this.tasksMap.set(id, updatedTask);
-    return updatedTask;
+    // Toggle the completion status
+    const results = await db
+      .update(tasks)
+      .set({ completed: !currentTask.completed })
+      .where(eq(tasks.id, id))
+      .returning();
+    return results[0];
   }
-
+  
   async deleteTask(id: number): Promise<boolean> {
-    return this.tasksMap.delete(id);
+    const results = await db
+      .delete(tasks)
+      .where(eq(tasks.id, id))
+      .returning();
+    return results.length > 0;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
